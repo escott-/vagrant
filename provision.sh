@@ -71,12 +71,24 @@ sed -i "s/\(#network.host: \).*/network.host: $ADDR /" $ELASTIC_CONF
 sed -i "s/\(#http.port: \).*/http.port: 9200 /" $ELASTIC_CONF
 service elasticsearch start
 
-# Install Kibana
-KIBANA_CONF="/etc/kibana/kibana.yml"
+# Add for logstash and kibana 
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
 echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
 apt-get update
+
+# Install Logstash
+LOGSTASH_CONF="/etc/logstash/logstash.yml"
+apt-get -y install logstash
+service logstash start
+
+# Install Kibana
+KIBANA_CONF="/etc/kibana/kibana.yml"
+ELASTICSEARCH="$ADDR:9200"
 apt-get -y install kibana
+sed -i "s/\(#server.port: \).*/server.port: 5601 /" $KIBANA_CONF
+sed -i "s/\(#server.host: \).*/server.host: $ADDR /" $KIBANA_CONF
+sed -i "s/\(#elasticsearch.url: \).*/elasticsearch.url: http:\/\/$ELASTICSEARCH /" $KIBANA_CONF
+sed -i "s/\(#elasticsearch.url: \).*/elasticsearch.url: $ELASTICSEARCH /" $KIBANA_CONF
 service kibana start
 
 # Postgres
