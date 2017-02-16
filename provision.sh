@@ -71,6 +71,14 @@ sed -i "s/\(#network.host: \).*/network.host: $ADDR /" $ELASTIC_CONF
 sed -i "s/\(#http.port: \).*/http.port: 9200 /" $ELASTIC_CONF
 service elasticsearch start
 
+# Install Kibana
+KIBANA_CONF="/etc/kibana/kibana.yml"
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
+apt-get update
+apt-get -y install kibana
+service kibana start
+
 # Postgres
 echo "BEGIN POSTGRES INSTALL"
 sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
