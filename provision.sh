@@ -35,17 +35,26 @@ apt-get install oracle-java8-installer -y
 
 # Install Redis
 echo "BEGIN REDIS INSTALL"
-wget http://download.redis.io/releases/redis-stable.tar.gz
-tar xzf redis-stable.tar.gz
-cd redis-stable
-make
-make test
-make install
-cd utils
-./install_server.sh
-REDIS_CONF="/etc/redis/6379.conf"
+REDIS_CONF="/etc/redis/redis.conf"
+add-apt-repository ppa:chris-lea/redis-server -y
+apt-get update
+apt-get install redis-server -y
 sed -i "s/\(bind \).*/\bind $ADDR /" $REDIS_CONF
-service redis_6379 start
+sed -i "s/\(protected-mode \).*/\protected-mode no /" $REDIS_CONF
+service redis-server restart
+
+# Install Arangodb
+echo "BEING ARANGODB INSTALL"
+ARANGO_CONF="/etc/arangodb3/arangod.conf"
+echo arangodb3 arangodb3/password password | debconf-set-selections
+echo arangodb3 arangodb3/password_again password | debconf-set-selections
+wget https://www.arangodb.com/repositories/arangodb31/xUbuntu_16.04/Release.key
+apt-key add Release.key
+echo 'deb https://www.arangodb.com/repositories/arangodb31/xUbuntu_16.04/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
+apt-get update -y
+apt-get install arangodb3=3.1.10
+sed -i "s/\(endpoint \).*/\endpoint = tcp:\/\/$ADDR:8529 /" $ARANGO_CONF
+service arangodb3 restart
 
 # Install Couchdb
 echo "BEGIN COUCHDB INSTALL"
@@ -57,8 +66,8 @@ service couchdb restart
 
 # Install Couchbase
 echo "BEGIN COUCHBASE INSTALL"
-wget https://packages.couchbase.com/releases/4.5.0/couchbase-server-community_4.5.0-ubuntu14.04_amd64.deb
-dpkg-deb -x couchbase-server-community_4.5.0-ubuntu14.04_amd64.deb $HOME
+wget https://packages.couchbase.com/releases/4.1.0/couchbase-server-community_4.1.0-ubuntu14.04_amd64.deb
+dpkg-deb -x couchbase-server-community_4.1.0-ubuntu14.04_amd64.deb $HOME
 cd $HOME/opt/couchbase
 ./bin/install/reloc.sh `pwd`
 ./bin/couchbase-server -- -noinput -detached
