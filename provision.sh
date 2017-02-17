@@ -72,6 +72,11 @@ cd $HOME/opt/couchbase
 ./bin/install/reloc.sh `pwd`
 ./bin/couchbase-server -- -noinput -detached
 
+# Install Fluentd
+echo "BEGIN FLUENT INSTALL"
+curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-xenial-td-agent2.sh | sh
+/etc/init.d/td-agent restart
+
 # Install Elasticsearch
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.1.deb
 dpkg -i elasticsearch-5.2.1.deb

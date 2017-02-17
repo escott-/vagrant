@@ -3,8 +3,15 @@
 ## What you get
 
 * Ubuntu bento/ubuntu-16.04
+* Java8
 * Redis latest
+* Arangodb 3.1.10
 * Couchdb latest 
+* Couchbase 4.1.0
+* Fluentd latest 
+* Elasticsearch 5.2.1
+* Logstash latest 
+* Kibana latest 
 * Postgresql 9.5
 * Node 4.4.7
 
